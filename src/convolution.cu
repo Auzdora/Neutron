@@ -21,7 +21,17 @@
     }                                                        \
   }
 
+/*
+  function name: cudnnConv2D
+  Description: 2 dimension convolution API. Data format is the NCHW
 
+  @param: Quark* devPtrInput: device input pointer
+  @param: Quark* devPtrFilter: device filter pointer
+  @param: Quark* devPtrOutput: device output pointer
+  @param: pad_height & pad_width: padding parameters
+  @param: stride_height & stride_width: stride parameters
+  @param: dilation_height & dilation_width: kernel dilation parameters
+*/
 extern "C" void cudnnConv2D(
     Quark* devPtrInput, 
     Quark* devPtrFilter, 
@@ -152,9 +162,17 @@ extern "C" void cudnnConv2D(
 
 }
 
+
 /*
-  @param: devPtrInput should be NCHW format, it is the input data while compute forward.
-  @param: devPtrFilter should be NCHW format, 
+  function name: cudnnConv2D
+  Description: 2 dimension convolution API. Data format is the NCHW
+  
+  @param: Quark* devPtrInput: device input pointer, should be NCHW format, it is the input data while compute forward
+  @param: Quark* devPtrFilter: device filter pointer, should be NCHW format, N is output channel, C is input channel
+  @param: Quark* devPtrOutput: device output pointer, dy through back propagation, the shape should be equal to the output NCHW shape
+  @param: pad_height & pad_width: padding parameters
+  @param: stride_height & stride_width: stride parameters
+  @param: dilation_height & dilation_width: kernel dilation parameters
 */
 extern "C" void cudnnConv2dGetKernelGradient(
     Quark* devPtrInput, 
@@ -281,6 +299,17 @@ extern "C" void cudnnConv2dGetKernelGradient(
 }
 
 
+/*
+  function name: cudnnConv2dGetDataGradient
+  Description: 2 dimension convolution back propagation API. Data format is the NCHW
+  
+  @param: Quark* devPtrInput: device input pointer, should be NCHW format
+  @param: Quark* devPtrFilter: device filter pointer, should be NCHW format, N is output channel, C is input channel
+  @param: Quark* devPtrOutput: device output pointer, dy through back propagation, the shape should be equal to the output NCHW shape
+  @param: pad_height & pad_width: padding parameters
+  @param: stride_height & stride_width: stride parameters
+  @param: dilation_height & dilation_width: kernel dilation parameters
+*/
 extern "C" void cudnnConv2dGetDataGradient(
     Quark* devPtrInput, 
     Quark* devPtrFilter, 
