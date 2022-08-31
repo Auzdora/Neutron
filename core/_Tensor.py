@@ -159,4 +159,4 @@ class Tensor:
 if __name__ == "__main__":
     a = np.ones((1024, 1024), dtype=np.float32)
     at = Tensor(a, device=GPU)
-    print(at.data)
+    print(at)
