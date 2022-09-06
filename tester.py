@@ -10,6 +10,7 @@ from ctypes import *
 
 # MetaFlow的一个问题是，batch数据的前向计算过程直接除了batch_size，但没有计入计算图中，反向传播时忽略了除法的反向传播
 # pytorch的batch训练思路是，计算过程中始终保留batch，会得到batch个损失值，这几个损失反向传播，每处计算平均梯度，然后继续各计算各的梯度传播
+# 预计9月中旬之后再开始验证
 
 x = np.ones((1, 2, 4, 4))
 dy = np.ones((1, 1, 2, 2))
