@@ -35,7 +35,11 @@ extern "C"{
 	EXPORT void GpuMulConst(Quark* arr1, Quark* arr2, Quark* arr_target);
 
 	EXPORT void GpuConv1D(Quark* arr, Quark* filter, Quark* arr_target);
+
+	// Abandoned version
 	EXPORT void GpuConv2D(Quark* arr, Quark* filter, Quark* arr_target);
+
+	// Cudnn version convolution operation
 	EXPORT void cudnnConv2D(Quark* devPtrInput, Quark* devPtrFilter, Quark* devPtrOutput, int pad_height, int pad_width, int stride_height, int stride_width, int dilation_height, int dilation_width);
 	EXPORT void cudnnConv2dGetKernelGradient(
 												Quark* devPtrInput, 

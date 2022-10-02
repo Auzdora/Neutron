@@ -25,7 +25,7 @@
   function name: cudnnConv2D
   Description: 2 dimension convolution API. Data format is the NCHW
 
-  @param: Quark* devPtrInput: device input pointer
+  @param: Quark* devPtrInput: device input pointer                                                                
   @param: Quark* devPtrFilter: device filter pointer
   @param: Quark* devPtrOutput: device output pointer
   @param: pad_height & pad_width: padding parameters
