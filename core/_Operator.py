@@ -254,3 +254,9 @@ class ReLU(Operator):
 
     def infer_shape(self, inputs):
         return inputs[0].shape
+
+
+class Convolution(Operator):
+    def __call__(self, inputs):
+        shape = self.infer_shape(inputs)
+        output_Tensor = Operator.__call__(self, inputs)
