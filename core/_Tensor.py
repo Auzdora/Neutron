@@ -134,17 +134,17 @@ class Tensor:
         could call 'def __del__(self)' method automatically to delete release memory space.
         """
         # Leaf node decoupling
-        if len(self.parents) == 0:
-            self.parents = []
+        if len(self.father) == 0:
+            self.father = []
             self.children = []
             return
 
         # Other node decoupling
-        if len(self.parents) > 0:
-            for parent in self.parents:
+        if len(self.father) > 0:
+            for parent in self.father:
                 parent.children = []
                 parent.clear()
-            self.parents = []
+            self.father = []
     
     def backward(self):
         if self.grad is None:
