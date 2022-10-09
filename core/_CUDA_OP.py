@@ -8,7 +8,8 @@
 from ctypes import c_float
 from numpy import ndarray
 from .utils import CUDALib
-from ._Tensor import Tensor
+from ._Tensor import Tensor, Quark
+from typing import Tuple
 
 
 def cudaAdd(arr1, arr2, target):
@@ -79,3 +80,48 @@ def cudaConv1D(arr, filter, target):
     assert isinstance(filter, Tensor)
     assert isinstance(target, Tensor)
     CUDALib.GpuConv1D(arr.handle, filter.handle, target.handle)
+
+def cudnnConv2D(devInput: Tensor,
+                devFilter: Tensor,
+                devOutput: Tensor,
+                padding: Tuple,
+                stride: Tuple,
+                dilation: Tuple) -> None:
+    
+    assert isinstance(devInput, Tensor)
+    assert isinstance(devFilter, Tensor)
+    assert isinstance(devOutput, Tensor)
+    CUDALib.cudnnConv2D(devInput.handle, devFilter.handle, devOutput.handle,
+                        padding[0],   padding[1],
+                        stride[0],    stride[1],
+                        dilation[0],  dilation[1])
+
+def cudnnConv2DGetKernelGradient(devInput: Tensor,
+                devFilter: Tensor,
+                devOutput: Tensor,
+                padding: Tuple,
+                stride: Tuple,
+                dilation: Tuple) -> None:
+    
+    assert isinstance(devInput, Tensor)
+    assert isinstance(devFilter, Tensor)
+    assert isinstance(devOutput, Tensor)
+    CUDALib.cudnnConv2dGetKernelGradient(devInput.handle, devFilter.handle, devOutput.handle,
+                        padding[0],   padding[1],
+                        stride[0],    stride[1],
+                        dilation[0],  dilation[1])
+
+def cudnnConv2DGetDataGradient(devInput: Tensor,
+                devFilter: Tensor,
+                devOutput: Tensor,
+                padding: Tuple,
+                stride: Tuple,
+                dilation: Tuple) -> None:
+    
+    assert isinstance(devInput, Tensor)
+    assert isinstance(devFilter, Tensor)
+    assert isinstance(devOutput, Tensor)
+    CUDALib.cudnnConv2dGetDataGradient(devInput.handle, devFilter.handle, devOutput.handle,
+                        padding[0],   padding[1],
+                        stride[0],    stride[1],
+                        dilation[0],  dilation[1])

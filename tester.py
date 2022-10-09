@@ -1,4 +1,4 @@
-from core import Tensor, Add
+from core import Tensor, Add, cudnnConv2DGetDataGradient
 from core import *
 import numpy as np
 import time
@@ -13,7 +13,7 @@ from ctypes import *
 # 预计9月中旬之后再开始验证
 
 x = np.ones((1, 2, 4, 4))
-dy = np.ones((1, 2, 4, 4))
+dy = np.ones((1, 1, 2, 2))
 
 # x = np.array([[[[1, 2, -1, 3], [1, 3, -4, 5],[0.4, 1, 1, -1], [2, 0, -4, 2.1]]]], dtype=np.float32)
 # dy = np.array([[[[0.3, 0.3], [-0.4, 0.1]]]], dtype=np.float32)
@@ -23,12 +23,9 @@ k = np.ones((1, 2, 3, 3), dtype=np.float32)
 input = Tensor(x, GPU, require_grad=True)
 kernel = Tensor(k, GPU, require_grad=False)
 Dy = Tensor(dy, GPU, require_grad=False)
+cudnnConv2DGetDataGradient(input, kernel, Dy, (0, 0), (1, 1), (1, 1))
 # CUDALib.cudnnConv2dGetDataGradient(input.handle, kernel.handle, Dy.handle,0,0,1,1,1,1)
-# input.cpu()
-# print(input)
-# kernel.cpu()
-# print(kernel)
-adop = Add()
-c = adop([input, Dy])
-c.backward()
-print(input.grad)
+input.cpu()
+print(input)
+Dy.cpu()
+print(Dy)
