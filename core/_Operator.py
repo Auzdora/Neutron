@@ -5,6 +5,8 @@
     Description: This file provides tons of operators for the Neutron.
     Created by Melrose-Lbt 2022-8-22
 """
+from math import floor
+from sys import hash_info
 from typing import List, Tuple
 from ._Tensor import Tensor
 from ._CUDA_OP import *
@@ -29,7 +31,7 @@ class Operator(object):
     def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
         raise NotImplementedError
     
-    def infer_shape(self, inputs):
+    def infer_shape(self, inputs: List[Tensor], *arg) -> Tuple:
         raise NotImplementedError
 
  
@@ -262,7 +264,8 @@ class Convolution2D(Operator):
                        padding: Tuple,
                        stride: Tuple,
                        dilation: Tuple) -> Tensor:
-        shape = self.infer_shape(Inputs)
+        shape = self.infer_shape(Inputs, padding, stride, dilation)
+        print(shape)
         output_Tensor = Operator.__call__(self, Inputs, Inputs[0].device, shape)
         self.compute(Inputs, output_Tensor, padding, stride, dilation)
         return output_Tensor
@@ -285,8 +288,13 @@ class Convolution2D(Operator):
                        dilation: Tuple) -> Tensor:
         pass
     
-    def infer_shape(self, inputs: List[Tensor]):
-        input_data = inputs[0]
-        filter = inputs[1]
+    def infer_shape(self, inputs: List[Tensor], padding: Tuple, stride: Tuple, dilation: Tuple) -> Tuple:
+        input_shape = inputs[0].shape
+        filter_shape = inputs[1].shape
+        n_in, c_in, h_in, w_in = input_shape
+        c_out, k_c_in, k_h_in, k_w_in = filter_shape
 
-        pass
+        h_out = floor((h_in + 2*padding[0] - dilation[0] * (k_h_in - 1))/stride[0])
+        w_out = floor((w_in + 2*padding[1] - dilation[1] * (k_w_in - 1))/stride[1])
+        
+        return (n_in, c_out, h_out, w_out)

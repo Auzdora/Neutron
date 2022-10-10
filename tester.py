@@ -1,4 +1,4 @@
-from core import Tensor, Add, cudnnConv2DGetDataGradient
+from core import Tensor, Add, Convolution2D
 from core import *
 import numpy as np
 import time
@@ -23,9 +23,7 @@ k = np.ones((1, 2, 3, 3), dtype=np.float32)
 input = Tensor(x, GPU, require_grad=True)
 kernel = Tensor(k, GPU, require_grad=False)
 Dy = Tensor(dy, GPU, require_grad=False)
-cudnnConv2DGetDataGradient(input, kernel, Dy, (0, 0), (1, 1), (1, 1))
-# CUDALib.cudnnConv2dGetDataGradient(input.handle, kernel.handle, Dy.handle,0,0,1,1,1,1)
-input.cpu()
-print(input)
-Dy.cpu()
-print(Dy)
+conv1 = Convolution2D()
+out = conv1([input, kernel], (3, 3), (1, 1), (1, 1))
+print(out.cpu())
+# cudnnConv2DGetDataGradient(input, kernel, Dy, (0, 0), (1, 1), (1, 1))
