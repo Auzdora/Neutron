@@ -23,10 +23,10 @@ class Operator(object):
 
         return output_Tensor
     
-    def compute(self, inputs: List[Tensor], output: Tensor) -> Tensor:
+    def compute(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
         raise NotImplementedError
     
-    def gradient(self, inputs: List[Tensor], output: Tensor) -> Tensor:
+    def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
         raise NotImplementedError
     
     def infer_shape(self, inputs):
@@ -257,7 +257,36 @@ class ReLU(Operator):
         return inputs[0].shape
 
 
-class Convolution(Operator):
-    def __call__(self, inputs):
-        shape = self.infer_shape(inputs)
-        output_Tensor = Operator.__call__(self, inputs)
+class Convolution2D(Operator):
+    def __call__(self, Inputs: List[Tensor],
+                       padding: Tuple,
+                       stride: Tuple,
+                       dilation: Tuple) -> Tensor:
+        shape = self.infer_shape(Inputs)
+        output_Tensor = Operator.__call__(self, Inputs, Inputs[0].device, shape)
+        self.compute(Inputs, output_Tensor, padding, stride, dilation)
+        return output_Tensor
+    
+    def compute(self, inputs: List[Tensor], 
+                      output: Tensor, 
+                      padding: Tuple, 
+                      stride: Tuple, 
+                      dilation: Tuple):
+
+        if output.device == GPU:
+            cudnnConv2D(inputs[0], inputs[1], output, padding, stride, dilation)
+        else:
+            raise NotImplementedError("The CPU version of Convolution2D OP has not been implemented yet")
+
+    def gradient(self, inputs: List[Tensor], 
+                       output: Tensor,
+                       padding: Tuple, 
+                       stride: Tuple, 
+                       dilation: Tuple) -> Tensor:
+        pass
+    
+    def infer_shape(self, inputs: List[Tensor]):
+        input_data = inputs[0]
+        filter = inputs[1]
+
+        pass
