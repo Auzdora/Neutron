@@ -61,7 +61,7 @@ class Tensor:
     
     @property
     def data(self):  # get data
-        assert(self.device == GPU), "the data on the gpu instead of cpu"
+        assert(self.device != GPU), "the data on the gpu instead of cpu"
         return np.ctypeslib.as_array(self.handle.data, shape=self.shape)
     
     def __str__(self):
@@ -109,6 +109,7 @@ class Tensor:
             host_ptr = CUDALib.AllocateHostData(size)
             CUDALib.CopyDataFromTo(self.handle.data, host_ptr, GPU, CPU, size)
             self.handle.data = host_ptr
+            self.device = CPU
         return self
     
     # transfer the data from the cpu to the gpu

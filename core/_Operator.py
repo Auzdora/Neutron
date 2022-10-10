@@ -286,7 +286,30 @@ class Convolution2D(Operator):
                        padding: Tuple, 
                        stride: Tuple, 
                        dilation: Tuple) -> Tensor:
-        pass
+
+        if output.device == GPU:
+            dx_t = Tensor(inputs[0].shape, GPU, require_grad=False)
+            dw_t = Tensor(inputs[1].shape, GPU, require_grad=False)
+            # Compute the data gradient
+            cudnnConv2DGetDataGradient(dx_t,     # results
+                                       inputs[1],    # kernel data 
+                                       output,         # output grad (already computed)
+                                       padding,
+                                       stride,
+                                       dilation)
+            # Compute the kernel gradient
+            cudnnConv2DGetKernelGradient(inputs[0],   # input image
+                                         dw_t,  # results
+                                         output,       # output grad (already computed)
+                                         padding,
+                                         stride,
+                                         dilation)
+
+            # Get the gradient from the buffer
+            inputs[0].grad = dx_t.cpu().data
+            inputs[1].grad = dw_t.cpu().data
+        else:
+            NotImplementedError("The CPU version of BP Convolution2D OP has not been implemented yet")
     
     def infer_shape(self, inputs: List[Tensor], padding: Tuple, stride: Tuple, dilation: Tuple) -> Tuple:
         input_shape = inputs[0].shape
