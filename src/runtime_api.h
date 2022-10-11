@@ -22,6 +22,7 @@ extern "C"{
 	EXPORT inline int getSize(int dim, int *shape);
 
 	EXPORT void matMul2D(Quark* arr1, Quark* arr2, Quark* arr_target);
+	EXPORT void matMul3D(Quark* arr1, Quark* arr2, Quark* arr_target);
 	EXPORT void GpuElemMul(Quark* arr1, Quark* arr2, Quark* arr_target);
 	EXPORT void GpuElemDiv(Quark* arr1, Quark* arr2, Quark* arr_target);
 	EXPORT void GpuElemSqrt(Quark* arr1, Quark* arr_target);

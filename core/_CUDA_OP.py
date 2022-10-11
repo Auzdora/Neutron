@@ -75,6 +75,18 @@ def cudaReLU(arr1, target):
     assert isinstance(target, Tensor)
     CUDALib.GpuReLU(arr1.handle, target.handle)
 
+def cudaMatMul2D(arr1, arr2, target):
+    assert isinstance(arr1, Tensor)
+    assert isinstance(arr2, Tensor)
+    assert isinstance(target, Tensor)
+    CUDALib.matMul2D(arr1.handle, arr2.handle, target.handle)
+
+def cudaMatMul3D(arr1, arr2, target):
+    assert isinstance(arr1, Tensor)
+    assert isinstance(arr2, Tensor)
+    assert isinstance(target, Tensor)
+    CUDALib.matMul3D(arr1.handle, arr2.handle, target.handle)
+
 def cudaConv1D(arr, filter, target):
     assert isinstance(arr, Tensor)
     assert isinstance(filter, Tensor)

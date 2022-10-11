@@ -17,7 +17,7 @@
 
 
 /* Function name: matrix_multiply_2d
-   Params       : float* arr1, float* arr2, float* target, size_t M, size_t N
+   Params       : float* arr1, float* arr2, float* target, size_t M, size_t N, size_t K
    Description  : Kernel function of CUDA, multiply 2d matrix.
    return       : None
 */
@@ -50,6 +50,43 @@ extern "C" void matMul2D(Quark* arr1, Quark* arr2, Quark* arr_target){
     CUDA_CHECK(cudaGetLastError());
 }
 
+
+/* Function name: matrix_multiply_3d
+   Params       : float* arr1, float* arr2, float* target, size_t B, size_t M, size_t N, size_t K
+   Description  : Kernel function of CUDA, multiply 2d matrix.
+   return       : None
+*/
+
+__global__ void matrix_multiply_3d(float* arr1, float* arr2, float* target, size_t B, size_t M, size_t N, size_t K){
+    int col = threadIdx.x + blockDim.x * blockIdx.x;
+    int row = threadIdx.y + blockDim.y * blockIdx.y;
+    int height = blockIdx.z;
+
+    if(row < M && col < K && height < B){
+        int temp = 0;
+        for(int i = 0; i < N; i++){
+            temp += arr1[height * M * N + N * row + i] * arr2[height * K * N + i * K + col];
+        }
+
+        target[col + K * row + height * M * K] = temp;
+    }
+}
+
+extern "C" void matMul3D(Quark* arr1, Quark* arr2, Quark* arr_target){
+    // M * N and N * K
+    int B = arr1->shape[0];
+    int M = arr1->shape[1];
+    int N = arr1->shape[2];
+    int K = arr2->shape[2];
+
+    constexpr const int TP = 16;
+	dim3 threads(TP, TP, 1);
+	dim3 blocks((M + TP - 1) / TP, (K + TP - 1) / TP, K);
+
+    matrix_multiply_3d <<<blocks, threads>>> (arr1->data, arr2->data, arr_target->data, B, M, N, K);
+    CUDA_CHECK(cudaGetLastError());
+}
+ 
 /* Function name: element_wise_multiply
    Params       : float* arr1, float* arr2, float* target, size_t M, size_t N
    Description  : Kernel function of CUDA, element wise/pixel wise multiply 2d.

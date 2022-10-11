@@ -12,20 +12,32 @@ from ctypes import *
 # pytorch的batch训练思路是，计算过程中始终保留batch，会得到batch个损失值，这几个损失反向传播，每处计算平均梯度，然后继续各计算各的梯度传播
 # 预计9月中旬之后再开始验证
 
-x = np.ones((1, 2, 4, 4))
-dy = np.ones((1, 1, 2, 2))
-
-# x = np.array([[[[1, 2, -1, 3], [1, 3, -4, 5],[0.4, 1, 1, -1], [2, 0, -4, 2.1]]]], dtype=np.float32)
-# dy = np.array([[[[0.3, 0.3], [-0.4, 0.1]]]], dtype=np.float32)
+x = np.ones((1, 2, 256, 256))
+dy = np.ones((1, 1, 254, 254))
 k = np.ones((1, 2, 3, 3), dtype=np.float32)
-# const = np.array(1.23, dtype=np.float32)
-# print(dy.shape)
-input = Tensor(x, GPU, require_grad=True)
-kernel = Tensor(k, GPU, require_grad=False)
-Dy = Tensor(dy, GPU, require_grad=False)
-conv1 = Convolution2D()
-out = conv1([input, kernel], (0, 0), (1, 1), (1, 1))
-conv1.gradient([input, kernel], Dy, (0, 0), (1, 1), (1, 1))
-print(input.grad, kernel.grad)
-cudnnConv2DGetDataGradient(input, kernel, Dy, (0, 0), (1, 1), (1, 1))
-print(input.cpu())
+
+# input = Tensor(x, GPU, require_grad=True)
+# kernel = Tensor(k, GPU, require_grad=False)
+# Dy = Tensor(dy, GPU, require_grad=False)
+# conv1 = Convolution2D()
+# out = conv1([input, kernel], (0, 0), (1, 1), (1, 1))
+# conv1.gradient([input, kernel], Dy, (0, 0), (1, 1), (1, 1))
+# print(input.grad, kernel.grad)
+m1 = np.array([[[1, 2, 1],
+                [2, 0, 1]],
+                [[1, 2, 1],
+                [0, 1, 1]]])
+m2 = np.array([[[1, 1],
+                [1, 2],
+                [0, 1]],
+                [[2, 1],
+                [1, 2],
+                [1, 1]]])
+k1 = np.ones((4, 1, 256))
+k2 = np.ones((4, 256, 16))
+re = np.ones((4, 1,16))
+M1 = Tensor(k1, GPU)
+M2 = Tensor(k2, GPU)
+ans = Tensor(re, GPU)
+cudaMatMul3D(M1, M2, ans)
+print(ans.cpu())

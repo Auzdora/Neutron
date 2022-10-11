@@ -259,6 +259,23 @@ class ReLU(Operator):
         return inputs[0].shape
 
 
+class MatMul(Operator):
+    def __call__(self, inputs: List[Tensor], device, shape: Tuple) -> Tensor:
+        shape = self.infer_shape(inputs)
+        output_Tensor = Operator.__call__(self, inputs, inputs[0].device, shape)
+        self.compute(inputs, output_Tensor)
+        return output_Tensor
+    
+    def compute(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
+        pass
+
+    def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
+        pass
+
+    def infer_shape(self, inputs: List[Tensor], *arg) -> Tuple:
+        pass
+
+
 class Convolution2D(Operator):
     def __call__(self, Inputs: List[Tensor],
                        padding: Tuple,
