@@ -25,10 +25,10 @@ class Operator(object):
 
         return output_Tensor
     
-    def compute(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
+    def compute(self, inputs: List[Tensor], output: Tensor, *arg) -> None:
         raise NotImplementedError
     
-    def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> Tensor:
+    def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> None:
         raise NotImplementedError
     
     def infer_shape(self, inputs: List[Tensor], *arg) -> Tuple:
@@ -260,7 +260,7 @@ class ReLU(Operator):
 
 
 class MatMul(Operator):
-    def __call__(self, inputs: List[Tensor], device, shape: Tuple) -> Tensor:
+    def __call__(self, inputs: List[Tensor]) -> Tensor:
         shape = self.infer_shape(inputs)
         output_Tensor = Operator.__call__(self, inputs, inputs[0].device, shape)
         self.compute(inputs, output_Tensor)
@@ -282,7 +282,6 @@ class Convolution2D(Operator):
                        stride: Tuple,
                        dilation: Tuple) -> Tensor:
         shape = self.infer_shape(Inputs, padding, stride, dilation)
-        print(shape)
         output_Tensor = Operator.__call__(self, Inputs, Inputs[0].device, shape)
         self.compute(Inputs, output_Tensor, padding, stride, dilation)
         return output_Tensor
@@ -338,3 +337,31 @@ class Convolution2D(Operator):
         w_out = floor((w_in + 2*padding[1] - dilation[1] * (k_w_in - 1))/stride[1])
         
         return (n_in, c_out, h_out, w_out)
+
+
+class Flatten_op(Operator):
+    """
+        Flatten operator. If the data format of the input is N * C * W * H, it'll flatten
+        to N * (CWH) * 1
+    """
+    def __call__(self, inputs: List[Tensor]) -> Tensor:
+        shape = self.infer_shape(inputs)
+        output_Tensor = Operator.__call__(self, inputs, inputs[0].device, shape)
+        self.compute(inputs, output_Tensor, shape)
+        return output_Tensor
+    
+    def compute(self, inputs: List[Tensor], output: Tensor, shape) -> None:
+        if output.device == GPU:
+            pass
+        else:
+            output.handle = inputs[0].handle.reshape(shape).copy()
+            
+    def gradient(self, inputs: List[Tensor], output: Tensor, *arg) -> None:
+        if output.device == GPU:
+            pass
+        else:
+            inputs[0].grad = output.grad.reshape(inputs[0].shape).copy()
+    
+    def infer_shape(self, inputs: List[Tensor], *arg) -> Tuple:
+        N, C, W, H = inputs[0].shape
+        return (N, C*W*H, 1)

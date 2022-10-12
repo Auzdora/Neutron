@@ -18,7 +18,7 @@ k = np.ones((1, 2, 3, 3), dtype=np.float32)
 
 # input = Tensor(x, GPU, require_grad=True)
 # kernel = Tensor(k, GPU, require_grad=False)
-# Dy = Tensor(dy, GPU, require_grad=False)
+# Dy = Tensor(dy, GPU, require_grad=False) 
 # conv1 = Convolution2D()
 # out = conv1([input, kernel], (0, 0), (1, 1), (1, 1))
 # conv1.gradient([input, kernel], Dy, (0, 0), (1, 1), (1, 1))
@@ -34,7 +34,7 @@ m2 = np.array([[[1, 1],
                 [1, 2],
                 [1, 1]]])
 k1 = np.ones((4, 1, 256))
-k2 = np.ones((4, 256, 16))
+k2 = np.ones((1, 256, 16))
 re = np.ones((4, 1,16))
 M1 = Tensor(k1, GPU)
 M2 = Tensor(k2, GPU)
