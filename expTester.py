@@ -18,4 +18,3 @@ out.handle[0][1] = out.handle[0][1] - 0.1 * 3
 out.grad = out.handle.copy()
 print(out.grad)
 out.backward()
-print(t_m1.grad)
